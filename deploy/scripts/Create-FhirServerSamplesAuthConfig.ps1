@@ -62,9 +62,9 @@ if (Get-Module -Name FhirServer) {
     Write-Host "FhirServer PS module is loaded"
 } else {
     Write-Host "Fetching FHIR Server repo to get access to FhirServer PS module."
-    $fhirServerVersion = 'master'
+    $fhirServerVersion = 'main'
     if (!(Test-Path -Path ".\fhir-server-$fhirServerVersion")) {
-        (New-Object System.Net.WebClient).DownloadFile("https://github.com/Microsoft/fhir-server/archive/$fhirServerVersion.zip", "$PWD\fhir-server-$fhirServerVersion.zip")
+        (New-Object System.Net.WebClient).DownloadFile("https://github.com/Microsoft/fhir-server/archive/$fhirServerVersion.zip", "$PWD/fhir-server-$fhirServerVersion.zip")
         Expand-Archive -Path ".\fhir-server-$fhirServerVersion.zip" -DestinationPath "$PWD"
         Remove-Item ".\fhir-server-$fhirServerVersion.zip"
     }
@@ -174,22 +174,22 @@ else
     $passwordSecureString = ConvertTo-SecureString $password -AsPlainText -Force
 }
 
-if ($aadUser) {
-    Set-AzureADUserPassword -ObjectId $aadUser.ObjectId -Password $passwordSecureString -EnforceChangePasswordPolicy $false -ForceChangePasswordNextLogin $false
-}
-else {
-    $PasswordProfile = New-Object -TypeName Microsoft.Open.AzureAD.Model.PasswordProfile
-    $PasswordProfile.Password = $password
-    $PasswordProfile.EnforceChangePasswordPolicy = $false
-    $PasswordProfile.ForceChangePasswordNextLogin = $false
+# if ($aadUser) {
+#     Set-AzureADUserPassword -ObjectId $aadUser.ObjectId -Password $passwordSecureString -EnforceChangePasswordPolicy $false -ForceChangePasswordNextLogin $false
+# }
+# else {
+#     $PasswordProfile = New-Object -TypeName Microsoft.Open.AzureAD.Model.PasswordProfile
+#     $PasswordProfile.Password = $password
+#     $PasswordProfile.EnforceChangePasswordPolicy = $false
+#     $PasswordProfile.ForceChangePasswordNextLogin = $false
 
-    $aadUser = New-AzureADUser -DisplayName $userId -PasswordProfile $PasswordProfile -UserPrincipalName $userUpn -AccountEnabled $true -MailNickName $userId
-}
+#     $aadUser = New-AzureADUser -DisplayName $userId -PasswordProfile $PasswordProfile -UserPrincipalName $userUpn -AccountEnabled $true -MailNickName $userId
+# }
 
 $upnSecureString = ConvertTo-SecureString $userUpn -AsPlainText -Force
 Set-AzKeyVaultSecret -VaultName $KeyVaultName -Name "$userId-upn" -SecretValue $upnSecureString | Out-Null   
 Set-AzKeyVaultSecret -VaultName $KeyVaultName -Name "$userId-password" -SecretValue $passwordSecureString | Out-Null   
-Set-FhirServerUserAppRoleAssignments -ApiAppId $application.AppId -UserPrincipalName $userUpn -AppRoles "globalAdmin"
+# Set-FhirServerUserAppRoleAssignments -ApiAppId $application.AppId -UserPrincipalName $userUpn -AppRoles "globalAdmin"
 
 $dashboardJSName = "${EnvironmentName}dash"
 $dashboardJSUrl = "https://${dashboardJSName}.${WebAppSuffix}"

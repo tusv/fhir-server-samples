@@ -54,6 +54,7 @@ param
     [parameter(Mandatory = $false)]
     [SecureString]$AdminPassword
 
+)
 
 function SecretValueText
 {
@@ -189,7 +190,7 @@ $serviceClientObjectId = (Get-AzureADServicePrincipal -Filter "AppId eq '$servic
 $dashboardUserUpnKV  = (Get-AzKeyVaultSecret -VaultName "${EnvironmentName}-ts" -Name "${EnvironmentName}-admin-upn")
 $dashboardUserUpn = SecretValueText -secret $dashboardUserUpnKV.SecretValue
 
-$dashboardUserOid = (Get-AzureADUser -Filter "UserPrincipalName eq '$dashboardUserUpn'").ObjectId
+# $dashboardUserOid = (Get-AzureADUser -Filter "UserPrincipalName eq '$dashboardUserUpn'").ObjectId
 
 $dashboardUserPasswordKV  = (Get-AzKeyVaultSecret -VaultName "${EnvironmentName}-ts" -Name "${EnvironmentName}-admin-password")
 $dashboardUserPassword = SecretValueText -secret $dashboardUserPasswordKV.SecretValue
@@ -201,7 +202,7 @@ $publicClientId = SecretValueText -secret $publicClientIdKV.SecretValue
 $accessPolicies = @()
 $accessPolicies += @{ "objectId" = $currentObjectId.ToString() }
 $accessPolicies += @{ "objectId" = $serviceClientObjectId.ToString() }
-$accessPolicies += @{ "objectId" = $dashboardUserOid.ToString() }
+# $accessPolicies += @{ "objectId" = $dashboardUserOid.ToString() }
 
 #We need to pass "something" as SQL server password even when it is not used:
 if ([string]::IsNullOrEmpty($SqlAdminPassword))
